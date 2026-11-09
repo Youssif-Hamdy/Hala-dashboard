@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="wineGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5C0A18" />
+      <stop offset="100%" stop-color="#3B0004" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F6E1C2" />
+      <stop offset="50%" stop-color="#E9C0A0" />
+      <stop offset="100%" stop-color="#B37A5D" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#wineGrad)" />
+  <rect x="4" y="4" width="120" height="120" rx="24" stroke="url(#goldGrad)" stroke-width="2" opacity="0.6" />
+  <!-- Elegant Arabic 'هـ' / Crown symbol -->
+  <path d="M64 26 L74 44 L94 42 L80 58 L88 78 L64 66 L40 78 L48 58 L34 42 L54 44 Z" fill="url(#goldGrad)" />
+  <circle cx="64" cy="94" r="8" fill="url(#goldGrad)" />
+  <circle cx="44" cy="94" r="4" fill="url(#goldGrad)" opacity="0.8" />
+  <circle cx="84" cy="94" r="4" fill="url(#goldGrad)" opacity="0.8" />
+</svg>

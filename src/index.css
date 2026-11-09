@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-ivory text-wine-deep font-sans antialiased; }
+  ::selection { background: #E9C0A0; color: #3B0004; }
+  :focus-visible { outline: 2px solid #B37A5D; outline-offset: 2px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #E9C0A0; border-radius: 6px; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@layer components {
+  .card { @apply rounded-2xl bg-white border border-gold/30 shadow-soft; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-wine text-gold-light hover:bg-wine-velvet hover:shadow-glow active:scale-[.98]; }
+  .btn-ghost { @apply btn border border-gold/40 text-wine hover:bg-gold-light/40; }
+  .input { @apply w-full rounded-xl border border-gold/40 bg-white/70 px-4 py-2.5 text-sm outline-none transition focus:border-wine-velvet focus:bg-white focus:ring-2 focus:ring-gold/30; }
+  .gold-text { background: linear-gradient(100deg,#B37A5D,#F6E1C2 40%,#E9C0A0 55%,#B37A5D); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+}
