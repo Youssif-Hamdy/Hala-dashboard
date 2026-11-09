@@ -1,11 +1,29 @@
 import axios from "axios";
 import type { Paged, UserRow, UserDetail, Application, AuthUser, Role } from "../types";
 
+// ========================================================
+// الـ baseURL بيجي من المتغير VITE_API_URL في .env
+// لو مش موجود يرجع string فاضي (للتطوير المحلي مع proxy)
+//
+// للـ Production على Vercel:
+//   حط في Vercel → Project Settings → Environment Variables:
+//   VITE_API_URL = https://[رابط-الباك-إند].vercel.app
+// ========================================================
+const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "",
-  withCredentials: true, // الكوكيز HttpOnly — لازم تتبعت مع كل request
+  baseURL: BASE,
+  withCredentials: true, // ضروري عشان الكوكيز HttpOnly تتبعت مع كل request
   headers: { "Content-Type": "application/json" },
 });
+
+// لو مفيش BASE محدد في التطوير — اطبع تحذير واضح في الـ console
+if (!BASE && import.meta.env.DEV) {
+  console.warn(
+    "⚠️  VITE_API_URL غير محدد — الطلبات هتتبعت للـ proxy المحلي.\n" +
+    "    عشان Production: حط VITE_API_URL=https://[backend].vercel.app في ملف .env"
+  );
+}
 
 export const errMsg = (e: unknown) =>
   (axios.isAxiosError(e) && (e.response?.data?.message as string)) || "حصل خطأ غير متوقع، جرّب تاني";
