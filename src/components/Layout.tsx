@@ -5,6 +5,7 @@ import {
   Menu,
   Users,
   FileText,
+  CalendarCheck2,
   X,
   ChevronRight,
   ChevronLeft,
@@ -16,6 +17,7 @@ import { Avatar } from "./ui";
 
 const nav = [
   { to: "/", label: "نظرة عامة", icon: LayoutDashboard, end: true },
+  { to: "/bookings", label: "الحجوزات", icon: CalendarCheck2 },
   { to: "/users", label: "المستخدمين", icon: Users },
   { to: "/applications", label: "الاستمارات", icon: FileText },
 ];

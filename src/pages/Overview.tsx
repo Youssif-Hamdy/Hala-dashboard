@@ -1,6 +1,6 @@
-import { CheckCircle2, FileText, Percent, Users } from "lucide-react";
+import { CalendarCheck2, CheckCircle2, FileText, Users } from "lucide-react";
 import { useMemo } from "react";
-import { getApplications, getUsers } from "../lib/api";
+import { getApplications, getBookings, getUsers } from "../lib/api";
 import { fmtDate, useFetch } from "../lib/hooks";
 import { Avatar, CountUp, ErrorBox, LogoLoader, PageHead } from "../components/ui";
 
@@ -9,6 +9,7 @@ const DAYS = ["الأحد", "الإثنين", "الثلاثاء", "الأربع�
 export default function Overview() {
   const u = useFetch(() => getUsers(1, 100), []);
   const a = useFetch(() => getApplications(1, 4), []);
+  const b = useFetch(() => getBookings(1, 4), []);
 
   const stats = useMemo(() => {
     const rows = u.data?.data ?? [];
@@ -53,9 +54,9 @@ export default function Overview() {
 
   const cards = [
     { label: "إجمالي المستخدمين", v: stats.total, icon: Users, isPrimary: true },
-    { label: "قدّموا استمارة", v: stats.withApp, icon: CheckCircle2 },
-    { label: "نسبة التقديم", v: stats.pct, suffix: "٪", icon: Percent },
+    { label: "طلبات الحجز", v: b.data?.pagination?.total ?? 0, icon: CalendarCheck2 },
     { label: "إجمالي الاستمارات", v: a.data?.pagination?.total ?? 0, icon: FileText },
+    { label: "قدّموا استمارة", v: stats.withApp, icon: CheckCircle2 },
   ];
 
   return (
@@ -83,7 +84,7 @@ export default function Overview() {
               />
             </div>
             <p className="mt-4 text-3xl font-bold tracking-tight">
-              <CountUp to={c.v} suffix={c.suffix} />
+              <CountUp to={c.v} />
             </p>
           </div>
         ))}

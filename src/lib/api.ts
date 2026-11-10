@@ -1,5 +1,14 @@
 import axios from "axios";
-import type { Paged, UserRow, UserDetail, Application, AuthUser, Role } from "../types";
+import type {
+  Paged,
+  UserRow,
+  UserDetail,
+  Application,
+  AuthUser,
+  Role,
+  Booking,
+  BookingStatus,
+} from "../types";
 
 // ========================================================
 // الـ baseURL بيجي من المتغير VITE_API_URL في .env
@@ -60,15 +69,18 @@ export const errMsg = (e: unknown) =>
   (axios.isAxiosError(e) && (e.response?.data?.message as string)) ||
   "حصل خطأ غير متوقع، جرّب تاني";
 
-const norm = <T,>(d: any, key: string): Paged<T> => ({
-  data: d.data ?? d[key] ?? [],
-  pagination: d.pagination ?? {
-    total: (d.data ?? d[key] ?? []).length,
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-  },
-});
+const norm = <T,>(d: any, key: string): Paged<T> => {
+  const list = d?.data ?? d?.[key] ?? (Array.isArray(d) ? d : []);
+  return {
+    data: Array.isArray(list) ? list : [],
+    pagination: d?.pagination ?? {
+      total: Array.isArray(list) ? list.length : 0,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    },
+  };
+};
 
 // ========================================================
 // Auth endpoints
@@ -120,5 +132,19 @@ export const getApplication = (id: string) =>
   api
     .get(`/api/applications/${id}`)
     .then((r) => r.data.data as Application);
+
+// ========================================================
+// Bookings endpoints
+// ========================================================
+export const getBookings = (page = 1, limit = 10, status?: BookingStatus) =>
+  api
+    .get("/api/bookings", { params: { page, limit, ...(status ? { status } : {}) } })
+    .then((r) => norm<Booking>(r.data, "bookings"));
+
+export const updateBookingStatus = (id: string, status: BookingStatus) =>
+  api.patch(`/api/bookings/${id}/status`, { status });
+
+export const deleteBooking = (id: string) =>
+  api.delete(`/api/bookings/${id}`);
 
 export default api;

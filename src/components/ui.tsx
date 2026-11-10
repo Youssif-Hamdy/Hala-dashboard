@@ -1,6 +1,14 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { AlertTriangle, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
-import type { Pagination, Role } from "../types";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Inbox,
+  XCircle,
+} from "lucide-react";
+import type { BookingStatus, Pagination, Role } from "../types";
 import { initials } from "../lib/hooks";
 
 export function CountUp({ to, suffix = "" }: { to: number; suffix?: string }) {
@@ -116,6 +124,33 @@ export const RoleBadge = ({ role }: { role: Role }) => (
     {role === "ADMIN" ? "أدمن" : "مستخدم"}
   </span>
 );
+
+export const BookingStatusBadge = ({ status }: { status: BookingStatus }) => {
+  switch (status) {
+    case "ACCEPTED":
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800 border border-emerald-200">
+          <CheckCircle2 size={12} />
+          مقبول
+        </span>
+      );
+    case "REJECTED":
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 border border-red-200">
+          <XCircle size={12} />
+          مرفوض
+        </span>
+      );
+    case "PENDING":
+    default:
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800 border border-amber-200">
+          <Clock size={12} />
+          معلّق
+        </span>
+      );
+  }
+};
 
 export const ErrorBox = ({ msg, retry }: { msg: string; retry: () => void }) => (
   <div className="card flex flex-col items-center gap-3 p-8 text-center">

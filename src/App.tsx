@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Overview from "./pages/Overview";
 import Users from "./pages/Users";
 import Applications from "./pages/Applications";
+import Bookings from "./pages/Bookings";
 
 function Guard() {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route element={<Guard />}>
               <Route index element={<Overview />} />
+              <Route path="bookings" element={<Bookings />} />
               <Route path="users" element={<Users />} />
               <Route path="applications" element={<Applications />} />
             </Route>
