@@ -3,49 +3,122 @@ import type { Paged, UserRow, UserDetail, Application, AuthUser, Role } from "..
 
 // ========================================================
 // الـ baseURL بيجي من المتغير VITE_API_URL في .env
-// لو مش موجود يرجع string فاضي (للتطوير المحلي مع proxy)
-//
 // للـ Production على Vercel:
-//   حط في Vercel → Project Settings → Environment Variables:
-//   VITE_API_URL = https://[رابط-الباك-إند].vercel.app
+//   Project Settings → Environment Variables → VITE_API_URL
 // ========================================================
 const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
 
-const api = axios.create({
-  baseURL: BASE,
-  withCredentials: true, // ضروري عشان الكوكيز HttpOnly تتبعت مع كل request
-  headers: { "Content-Type": "application/json" },
-});
-
-// لو مفيش BASE محدد في التطوير — اطبع تحذير واضح في الـ console
 if (!BASE && import.meta.env.DEV) {
   console.warn(
     "⚠️  VITE_API_URL غير محدد — الطلبات هتتبعت للـ proxy المحلي.\n" +
-    "    عشان Production: حط VITE_API_URL=https://[backend].vercel.app في ملف .env"
+    "    عشان Production: حط VITE_API_URL=https://hala-backend-six.vercel.app في ملف .env"
   );
 }
 
+// ========================================================
+// Token helpers — يخزن الـ JWT في localStorage
+// ========================================================
+const TOKEN_KEY = "hala_token";
+
+export const saveToken = (token: string) => localStorage.setItem(TOKEN_KEY, token);
+export const getToken  = ()              => localStorage.getItem(TOKEN_KEY);
+export const clearToken = ()             => localStorage.removeItem(TOKEN_KEY);
+
+// ========================================================
+// Axios instance
+// ========================================================
+const api = axios.create({
+  baseURL: BASE,
+  withCredentials: true, // للكوكيز HttpOnly (fallback)
+  headers: { "Content-Type": "application/json" },
+});
+
+// ── Request interceptor: يلحق Bearer token مع كل طلب ──
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ── Response interceptor: لو 401 امسح التوكن ──
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (axios.isAxiosError(err) && err.response?.status === 401) {
+      clearToken();
+    }
+    return Promise.reject(err);
+  }
+);
+
+// ========================================================
+// Helpers
+// ========================================================
 export const errMsg = (e: unknown) =>
-  (axios.isAxiosError(e) && (e.response?.data?.message as string)) || "حصل خطأ غير متوقع، جرّب تاني";
+  (axios.isAxiosError(e) && (e.response?.data?.message as string)) ||
+  "حصل خطأ غير متوقع، جرّب تاني";
 
 const norm = <T,>(d: any, key: string): Paged<T> => ({
   data: d.data ?? d[key] ?? [],
-  pagination: d.pagination ?? { total: (d.data ?? d[key] ?? []).length, page: 1, limit: 10, totalPages: 1 },
+  pagination: d.pagination ?? {
+    total: (d.data ?? d[key] ?? []).length,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  },
 });
 
-export const adminLogin = (email: string, password: string) =>
-  api.post<{ user: AuthUser }>("/api/auth/admin/login", { email, password }).then((r) => r.data.user);
-export const logout = () => api.post("/api/auth/logout");
+// ========================================================
+// Auth endpoints
+// ========================================================
+export const adminLogin = async (email: string, password: string): Promise<AuthUser> => {
+  const r = await api.post<{ user: AuthUser; token?: string }>("/api/auth/admin/login", {
+    email,
+    password,
+  });
+  // لو الباك إند بعت token في الـ response احفظه
+  if (r.data.token) {
+    saveToken(r.data.token);
+  }
+  return r.data.user;
+};
 
+export const logout = async () => {
+  try {
+    await api.post("/api/auth/logout");
+  } finally {
+    clearToken(); // امسح التوكن دايماً سواء الـ request نجح أو لأ
+  }
+};
+
+// ========================================================
+// Users endpoints
+// ========================================================
 export const getUsers = (page = 1, limit = 10, role?: Role) =>
-  api.get("/api/users", { params: { page, limit, ...(role ? { role } : {}) } }).then((r) => norm<UserRow>(r.data, "users"));
+  api
+    .get("/api/users", { params: { page, limit, ...(role ? { role } : {}) } })
+    .then((r) => norm<UserRow>(r.data, "users"));
+
 export const getUser = (id: string) =>
-  api.get(`/api/users/${id}`).then((r) => (r.data.data ?? r.data.user ?? r.data) as UserDetail);
-export const deleteUser = (id: string) =>
-  api.delete(`/api/users/${id}`);
+  api
+    .get(`/api/users/${id}`)
+    .then((r) => (r.data.data ?? r.data.user ?? r.data) as UserDetail);
+
+export const deleteUser = (id: string) => api.delete(`/api/users/${id}`);
+
+// ========================================================
+// Applications endpoints
+// ========================================================
 export const getApplications = (page = 1, limit = 9) =>
-  api.get("/api/applications", { params: { page, limit } }).then((r) => norm<Application>(r.data, "applications"));
+  api
+    .get("/api/applications", { params: { page, limit } })
+    .then((r) => norm<Application>(r.data, "applications"));
+
 export const getApplication = (id: string) =>
-  api.get(`/api/applications/${id}`).then((r) => r.data.data as Application);
+  api
+    .get(`/api/applications/${id}`)
+    .then((r) => r.data.data as Application);
 
 export default api;
