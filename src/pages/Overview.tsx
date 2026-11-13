@@ -1,6 +1,6 @@
-import { CalendarCheck2, CheckCircle2, FileText, Users } from "lucide-react";
+import { CalendarCheck2, CheckCircle2, FileText, MessagesSquare, Users } from "lucide-react";
 import { useMemo } from "react";
-import { getApplications, getBookings, getUsers } from "../lib/api";
+import { getApplications, getBookings, getConsultations, getUsers } from "../lib/api";
 import { fmtDate, useFetch } from "../lib/hooks";
 import { Avatar, CountUp, ErrorBox, LogoLoader, PageHead } from "../components/ui";
 
@@ -10,6 +10,7 @@ export default function Overview() {
   const u = useFetch(() => getUsers(1, 100), []);
   const a = useFetch(() => getApplications(1, 4), []);
   const b = useFetch(() => getBookings(1, 4), []);
+  const c = useFetch(() => getConsultations(1, 4), []);
 
   const stats = useMemo(() => {
     const rows = u.data?.data ?? [];
@@ -55,8 +56,8 @@ export default function Overview() {
   const cards = [
     { label: "إجمالي المستخدمين", v: stats.total, icon: Users, isPrimary: true },
     { label: "طلبات الحجز", v: b.data?.pagination?.total ?? 0, icon: CalendarCheck2 },
+    { label: "طلبات الاستشارة", v: c.data?.pagination?.total ?? 0, icon: MessagesSquare },
     { label: "إجمالي الاستمارات", v: a.data?.pagination?.total ?? 0, icon: FileText },
-    { label: "قدّموا استمارة", v: stats.withApp, icon: CheckCircle2 },
   ];
 
   return (
@@ -65,26 +66,26 @@ export default function Overview() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map((c) => (
+        {cards.map((card) => (
           <div
-            key={c.label}
+            key={card.label}
             className={`card relative overflow-hidden p-5 transition-all duration-200 hover:-translate-y-0.5 ${
-              c.isPrimary
+              card.isPrimary
                 ? "!border-0 !bg-gradient-to-br from-wine to-wine-velvet !text-gold-light shadow-glow"
                 : "hover:shadow-md"
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className={`text-sm font-medium ${c.isPrimary ? "text-gold-light/80" : "text-wine-deep/60"}`}>
-                {c.label}
+              <span className={`text-sm font-medium ${card.isPrimary ? "text-gold-light/80" : "text-wine-deep/60"}`}>
+                {card.label}
               </span>
-              <c.icon
+              <card.icon
                 size={20}
-                className={c.isPrimary ? "text-gold" : "text-gold-dark"}
+                className={card.isPrimary ? "text-gold" : "text-gold-dark"}
               />
             </div>
             <p className="mt-4 text-3xl font-bold tracking-tight">
-              <CountUp to={c.v} />
+              <CountUp to={card.v} />
             </p>
           </div>
         ))}

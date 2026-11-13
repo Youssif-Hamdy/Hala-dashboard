@@ -7,6 +7,7 @@ import Overview from "./pages/Overview";
 import Users from "./pages/Users";
 import Applications from "./pages/Applications";
 import Bookings from "./pages/Bookings";
+import Consultations from "./pages/Consultations";
 
 function Guard() {
   const { user } = useAuth();
@@ -28,6 +29,7 @@ export default function App() {
             <Route element={<Guard />}>
               <Route index element={<Overview />} />
               <Route path="bookings" element={<Bookings />} />
+              <Route path="consultations" element={<Consultations />} />
               <Route path="users" element={<Users />} />
               <Route path="applications" element={<Applications />} />
             </Route>

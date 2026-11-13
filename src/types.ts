@@ -1,5 +1,6 @@
 export type Role = "USER" | "ADMIN";
 export type BookingStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+export type ConsultationStatus = "PENDING" | "ACCEPTED" | "COMPLETED" | "CANCELLED";
 
 export interface AuthUser {
   id: string;
@@ -53,6 +54,26 @@ export interface Booking {
   createdAt: string;
   updatedAt?: string;
   user?: { id: string; name: string; email: string; phone?: string };
+}
+
+export interface Consultation {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  duration: number; // e.g. 60 min
+  price?: number;
+  status: ConsultationStatus;
+  notes?: string;
+  topic?: string;
+  createdAt: string;
+  updatedAt?: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+  };
 }
 
 export interface Pagination {

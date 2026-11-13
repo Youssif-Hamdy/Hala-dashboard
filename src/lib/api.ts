@@ -8,6 +8,8 @@ import type {
   Role,
   Booking,
   BookingStatus,
+  Consultation,
+  ConsultationStatus,
 } from "../types";
 
 // ========================================================
@@ -146,5 +148,38 @@ export const updateBookingStatus = (id: string, status: BookingStatus) =>
 
 export const deleteBooking = (id: string) =>
   api.delete(`/api/bookings/${id}`);
+
+// ========================================================
+// Consultations endpoints
+// ========================================================
+export const getConsultations = (
+  page = 1,
+  limit = 10,
+  status?: ConsultationStatus,
+  duration?: number,
+  search?: string
+) =>
+  api
+    .get("/api/consultations", {
+      params: {
+        page,
+        limit,
+        ...(status ? { status } : {}),
+        ...(duration ? { duration } : {}),
+        ...(search ? { search } : {}),
+      },
+    })
+    .then((r) => norm<Consultation>(r.data, "consultations"));
+
+export const getConsultation = (id: string) =>
+  api
+    .get(`/api/consultations/${id}`)
+    .then((r) => (r.data.data ?? r.data.consultation ?? r.data) as Consultation);
+
+export const updateConsultationStatus = (id: string, status: ConsultationStatus) =>
+  api.patch(`/api/consultations/${id}/status`, { status });
+
+export const deleteConsultation = (id: string) =>
+  api.delete(`/api/consultations/${id}`);
 
 export default api;

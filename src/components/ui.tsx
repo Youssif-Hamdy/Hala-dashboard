@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import {
   AlertTriangle,
+  Check,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -8,7 +9,7 @@ import {
   Inbox,
   XCircle,
 } from "lucide-react";
-import type { BookingStatus, Pagination, Role } from "../types";
+import type { BookingStatus, ConsultationStatus, Pagination, Role } from "../types";
 import { initials } from "../lib/hooks";
 
 export function CountUp({ to, suffix = "" }: { to: number; suffix?: string }) {
@@ -139,6 +140,40 @@ export const BookingStatusBadge = ({ status }: { status: BookingStatus }) => {
         <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 border border-red-200">
           <XCircle size={12} />
           مرفوض
+        </span>
+      );
+    case "PENDING":
+    default:
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800 border border-amber-200">
+          <Clock size={12} />
+          معلّق
+        </span>
+      );
+  }
+};
+
+export const ConsultationStatusBadge = ({ status }: { status: ConsultationStatus }) => {
+  switch (status) {
+    case "ACCEPTED":
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-800 border border-blue-200">
+          <Check size={12} />
+          مقبول
+        </span>
+      );
+    case "COMPLETED":
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800 border border-emerald-200">
+          <CheckCircle2 size={12} />
+          مكتمل
+        </span>
+      );
+    case "CANCELLED":
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 border border-red-200">
+          <XCircle size={12} />
+          ملغي
         </span>
       );
     case "PENDING":
